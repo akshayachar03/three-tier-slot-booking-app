@@ -29,7 +29,7 @@ stages:
     - script: |
         echo "🔧 Building Docker image with BuildKit..."
         export DOCKER_BUILDKIT=1
-        docker build -f $(dockerfilePath) -t $(containerRegistry)/$(imageRepository):$(tag) .
+        docker build -f $(dockerfilePath) -t $(containerRegistry)/$(imageRepository):$(tag) project/
       displayName: 'Build Docker Image with BuildKit'
 
 # --------------------------------------
