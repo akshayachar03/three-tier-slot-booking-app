@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: flask-backend
-        image: covidcicd.azurecr.io/covidbedslotbooking:55
+        image: covidcicd.azurecr.io/covidbedslotbooking:56
         env:
         - name: DB_HOST
           value: mysql
