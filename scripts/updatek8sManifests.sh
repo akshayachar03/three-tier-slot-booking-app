@@ -1,28 +1,17 @@
-# Use official Python image
-FROM python:3.10-slim
+#!/bin/bash
 
-# Prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+SERVICE=$1
+IMAGE=$2
 
-# Install system dependencies for mysqlclient
-RUN apt-get update && apt-get install -y \
-    gcc \
-    default-libmysqlclient-dev \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+echo "Updating $SERVICE deployment image to: $IMAGE"
 
-# Set working directory
-WORKDIR /app
+TARGET_FILE="k8s-manifests/${SERVICE}-deployment.yaml"
 
-# Copy application code
-COPY . .
+if [ -f "$TARGET_FILE" ]; then
+  sed -i "s|image:.*|image: $IMAGE|g" "$TARGET_FILE"
+  echo "✅ Updated $TARGET_FILE with new image."
+else
+  echo "❌ Error: $TARGET_FILE not found"
+  exit 1
+fi
 
-# Install Python packages
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Run the Flask app (you can change this to gunicorn if needed)
-CMD ["python", "app.py"]
