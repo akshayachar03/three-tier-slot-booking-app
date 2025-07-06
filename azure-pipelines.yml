@@ -19,26 +19,20 @@ pool:
   name: 'covidagent'
 
 stages:
+# --------------------------------------
 - stage: Build
   displayName: Build stage
   jobs:
   - job: Build
     displayName: Build
-    env:
-      DOCKER_BUILDKIT: '1'  # ✅ Enable BuildKit
     steps:
-    - script: echo "Starting Docker build with BuildKit..."
-      displayName: 'Pre-Build Message'
+    - script: |
+        echo "🔧 Building Docker image with BuildKit..."
+        export DOCKER_BUILDKIT=1
+        docker build -f $(dockerfilePath) -t $(containerRegistry)/$(imageRepository):$(tag) .
+      displayName: 'Build Docker Image with BuildKit'
 
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        containerRegistry: '$(dockerRegistryServiceConnection)'
-        repository: '$(imageRepository)'
-        command: 'build'
-        Dockerfile: '$(dockerfilePath)'
-        tags: '$(tag)'
-
+# --------------------------------------
 - stage: Push
   displayName: Push stage
   dependsOn: Build
@@ -47,22 +41,23 @@ stages:
     displayName: Push
     steps:
     - task: Docker@2
-      displayName: Push an image to container registry
+      displayName: Push image to Azure Container Registry
       inputs:
         containerRegistry: '$(dockerRegistryServiceConnection)'
         repository: '$(imageRepository)'
         command: 'push'
         tags: '$(tag)'
 
+# --------------------------------------
 - stage: Update
-  displayName: Update k8s manifests
+  displayName: Update Kubernetes manifests
   dependsOn: Push
   jobs:
   - job: Update
     displayName: Update manifest
     steps:
     - script: chmod +x scripts/updatek8sManifests.sh
-      displayName: Make update script executable
+      displayName: Make script executable
 
     - task: ShellScript@2
       displayName: Update K8s Image in Manifest
