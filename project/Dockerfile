@@ -1,17 +1,18 @@
-# Use official Python image
+# Use official Python slim image
 FROM python:3.10-slim
 
-# Prevent interactive prompts
+# Prevent prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for mysqlclient
 RUN apt-get update && apt-get install -y \
-    gcc \
-    default-libmysqlclient-dev \
     build-essential \
+    default-libmysqlclient-dev \
+    pkg-config \
     libssl-dev \
     libffi-dev \
-    libpq-dev \
+    python3-dev \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -24,5 +25,5 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the Flask app (you can change this to gunicorn if needed)
+# Run the app
 CMD ["python", "app.py"]
