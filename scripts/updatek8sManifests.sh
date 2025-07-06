@@ -1,22 +1,28 @@
 #!/bin/bash
 
-SERVICE=$1
-IMAGE=$2
+set -x
 
-# Get the full path to this script, then go up one level
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+# Set the repository URL
+REPO_URL="https://4UndVy0R7VLdrgJ8LgfEsrO9Jb4qevs1MxPxjBSYlI4N4B2SuyX9JQQJ99BGACAAAAAAAAAAAAASAZDO2IOE@dev.azure.com/akshayachar/covid-bedslot-booking/_git/covid-bedslot-booking"
 
-TARGET_FILE="$ROOT_DIR/k8s-manifests/${SERVICE}-deployment.yaml"
+# Clone the git repository into the /tmp directory
+git clone "$REPO_URL" /tmp/temp_repo
 
-echo "Updating $SERVICE deployment image to: $IMAGE"
+# Navigate into the cloned repository directory
+cd /tmp/temp_repo
 
-if [ -f "$TARGET_FILE" ]; then
-  sed -i "s|^\(\s*image:\s*\).*|\1$IMAGE|g" "$TARGET_FILE"
-  echo "✅ Updated $TARGET_FILE with new image."
-  echo "📄 Contents of updated file:"
-  cat "$TARGET_FILE"
-else
-  echo "❌ Error: $TARGET_FILE not found"
-  exit 1
-fi
+# Make changes to the Kubernetes manifest file(s)
+# For example, let's say you want to change the image tag in a deployment.yaml file
+sed -i "s|image:.*|image: covidcicd.azurecr.io/$2:$3|g" k8s-specifications/$1-deployment.yaml
+
+# Add the modified files
+git add .
+
+# Commit the changes
+git commit -m "Update Kubernetes manifest"
+
+# Push the changes back to the repository
+git push
+
+# Cleanup: remove the temporary directory
+rm -rf /tmp/temp_repo
