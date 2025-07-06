@@ -56,6 +56,9 @@ stages:
   - job: Update
     displayName: Update manifest
     steps:
+    - script: dos2unix scripts/updatek8sManifests.sh
+      displayName: 'Convert script to Unix format'
+
     - script: chmod +x scripts/updatek8sManifests.sh
       displayName: Make script executable
 
