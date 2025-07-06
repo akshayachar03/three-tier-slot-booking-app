@@ -1,9 +1,8 @@
 # Use official Python image
 FROM python:3.10-slim
 
-# Set environment variables to prevent Python from writing .pyc files and buffering stdout/stderr
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for mysqlclient
 RUN apt-get update && apt-get install -y \
@@ -18,12 +17,12 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy app files
+# Copy application code
 COPY . .
 
-# Install Python dependencies
+# Install Python packages
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the app (you can modify this if you're using Flask CLI or gunicorn)
+# Run the Flask app (you can change this to gunicorn if needed)
 CMD ["python", "app.py"]
