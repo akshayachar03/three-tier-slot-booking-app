@@ -1,21 +1,29 @@
-# Use a slim official Python image
-FROM python:3.8-slim
+# Use official Python image
+FROM python:3.10-slim
+
+# Set environment variables to prevent Python from writing .pyc files and buffering stdout/stderr
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies for mysqlclient
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy only requirements first for layer caching
-COPY requirements.txt ./
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Now copy the entire project (after installing dependencies)
+# Copy app files
 COPY . .
 
-# Expose the port Flask runs on
-EXPOSE 5000
+# Install Python dependencies
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the app
-CMD ["python", "main.py"]
-
+# Run the app (you can modify this if you're using Flask CLI or gunicorn)
+CMD ["python", "app.py"]
