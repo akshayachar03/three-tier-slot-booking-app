@@ -24,7 +24,12 @@ stages:
   jobs:
   - job: Build
     displayName: Build
+    env:
+      DOCKER_BUILDKIT: '1'  # ✅ Enable BuildKit
     steps:
+    - script: echo "Starting Docker build with BuildKit..."
+      displayName: 'Pre-Build Message'
+
     - task: Docker@2
       displayName: Build an image
       inputs:
@@ -56,6 +61,9 @@ stages:
   - job: Update
     displayName: Update manifest
     steps:
+    - script: chmod +x scripts/updatek8sManifests.sh
+      displayName: Make update script executable
+
     - task: ShellScript@2
       displayName: Update K8s Image in Manifest
       inputs:
