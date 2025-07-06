@@ -66,4 +66,4 @@ stages:
       displayName: Update K8s Image in Manifest
       inputs:
         scriptPath: 'scripts/updatek8sManifests.sh'
-        args: 'backend $(containerRegistry)/$(imageRepository):$(tag)'
+        args: 'backend $(imageRepository) $(tag)'
