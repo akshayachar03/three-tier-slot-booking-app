@@ -27,6 +27,8 @@ spec:
               key: password
         ports:
         - containerPort: 5000
+      imagePullSecrets:
+      - name: acr-secrets
 ---
 apiVersion: v1
 kind: Service
