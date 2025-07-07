@@ -2,8 +2,6 @@ trigger:
   paths:
     include:
       - project/*
-      - scripts/*
-      - k8s-manifests/*
 
 resources:
 - repo: self
